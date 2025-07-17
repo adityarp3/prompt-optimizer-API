@@ -1,4 +1,4 @@
-# [prompt-optimizer-API]
+# prompt-optimizer-API
 
 ![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue?style=for-the-badge&logo=python)
 ## Table of Contents
