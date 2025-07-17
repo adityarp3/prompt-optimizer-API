@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from .schemas import OptimizeRequest, OptimizeResponse
-from .core.optimizer import PromptOptimizer
+from app.schemas import OptimizeRequest, OptimizeResponse
+from app.core.optimizer import PromptOptimizer
 
 SUPPORTED_MODELS = ["gpt", "claude", "deepseek"]
 SUPPORTED_LEVELS = ["light", "medium", "aggressive", "chatbot"]
