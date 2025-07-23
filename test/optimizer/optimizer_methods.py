@@ -49,11 +49,14 @@ def test(prompt: str):
 
 
     print("_post_cleanup")
-    print(optimizer._post_cleanup(p))
+    p=optimizer._post_cleanup(p)
+    print(p)
     print("_clean_whitespace_and_punctuation")
-    print(optimizer._clean_whitespace_and_punctuation(p))
+    p=optimizer._clean_whitespace_and_punctuation(p)
+    print(p)
+    print(f"tokens after: {optimizer._count_tokens(p)}")
 
-prompt = "in a way, i need to program a logic operator, write it and make it under 500 words"
+prompt = "so this is a new prompt, i would like to see how good this does, this is your first time testing blind"
 
 if __name__ == '__main__':
     test(prompt)
