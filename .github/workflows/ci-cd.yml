@@ -60,19 +60,19 @@ jobs:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Run Bandit Security Scan
-      uses: securecodewarrior/github-action-add-sarif@v1
-      with:
-        sarif-file: bandit-report.sarif
+      - name: Install bandit
+        run: pip install bandit
 
-    - name: Install bandit
-      run: pip install bandit
+      - name: Run bandit scan
+        run: bandit -r app/ -f sarif -o bandit-report.sarif || true
 
-    - name: Run bandit scan
-      run: bandit -r app/ -f sarif -o bandit-report.sarif || true
+      - name: Upload SARIF report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bandit-report.sarif
 
   build-and-push:
     name: Build and Push Docker Image
