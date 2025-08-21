@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200": {
+      "displayName": "PromptOptimizerStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "749210469209-us-west-1-0eb36cb1": {
+          "bucketName": "cdk-hnb659fds-assets-749210469209-us-west-1",
+          "objectKey": "7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200.zip",
+          "region": "us-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::749210469209:role/cdk-hnb659fds-file-publishing-role-749210469209-us-west-1"
+        }
+      }
+    },
+    "8d8bb7ed9798a6738da8150136a40896651e9f05c73fd3030b4a7a136650d10c": {
+      "displayName": "PromptOptimizerStack Template",
+      "source": {
+        "path": "PromptOptimizerStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "749210469209-us-west-1-c87739e8": {
+          "bucketName": "cdk-hnb659fds-assets-749210469209-us-west-1",
+          "objectKey": "8d8bb7ed9798a6738da8150136a40896651e9f05c73fd3030b4a7a136650d10c.json",
+          "region": "us-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::749210469209:role/cdk-hnb659fds-file-publishing-role-749210469209-us-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

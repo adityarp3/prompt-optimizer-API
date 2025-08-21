@@ -1,0 +1,1291 @@
+{
+ "Resources": {
+  "PromptOptimizerECR0D4FFB87": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "ImageScanningConfiguration": {
+     "ScanOnPush": true
+    },
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Keep only 10 images\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":10},\"action\":{\"type\":\"expire\"}}]}"
+    },
+    "RepositoryName": "prompt-optimizer-api"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerECR/Resource"
+   }
+  },
+  "PromptOptimizerVPC6620D42D": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/Resource"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet1Subnet395E5881": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-west-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1/Subnet"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet1RouteTableBE01002E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1/RouteTable"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet1RouteTableAssociation31E0F2E6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet1RouteTableBE01002E"
+    },
+    "SubnetId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet1Subnet395E5881"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet1DefaultRoute7F19BD0D": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "PromptOptimizerVPCIGW6BE05EBC"
+    },
+    "RouteTableId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet1RouteTableBE01002E"
+    }
+   },
+   "DependsOn": [
+    "PromptOptimizerVPCVPCGWCCB1100B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet1EIPA9FD92ED": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1/EIP"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet1NATGateway0A43043E": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "PromptOptimizerVPCPublicSubnet1EIPA9FD92ED",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet1Subnet395E5881"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "PromptOptimizerVPCPublicSubnet1DefaultRoute7F19BD0D",
+    "PromptOptimizerVPCPublicSubnet1RouteTableAssociation31E0F2E6"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet1/NATGateway"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet2Subnet7C90DD5B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-west-1c",
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet2/Subnet"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet2RouteTableBD5B5BE0": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet2/RouteTable"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet2RouteTableAssociation90942539": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet2RouteTableBD5B5BE0"
+    },
+    "SubnetId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet2Subnet7C90DD5B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "PromptOptimizerVPCPublicSubnet2DefaultRoute3D652B60": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "PromptOptimizerVPCIGW6BE05EBC"
+    },
+    "RouteTableId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet2RouteTableBD5B5BE0"
+    }
+   },
+   "DependsOn": [
+    "PromptOptimizerVPCVPCGWCCB1100B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "PromptOptimizerVPCPrivateSubnet1Subnet29B55E6B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-west-1a",
+    "CidrBlock": "10.0.2.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet1/Subnet"
+   }
+  },
+  "PromptOptimizerVPCPrivateSubnet1RouteTableE765BB90": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet1/RouteTable"
+   }
+  },
+  "PromptOptimizerVPCPrivateSubnet1RouteTableAssociation03025101": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "PromptOptimizerVPCPrivateSubnet1RouteTableE765BB90"
+    },
+    "SubnetId": {
+     "Ref": "PromptOptimizerVPCPrivateSubnet1Subnet29B55E6B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "PromptOptimizerVPCPrivateSubnet1DefaultRoute27BAD1D6": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet1NATGateway0A43043E"
+    },
+    "RouteTableId": {
+     "Ref": "PromptOptimizerVPCPrivateSubnet1RouteTableE765BB90"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "PromptOptimizerVPCPrivateSubnet2Subnet810BA9D4": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-west-1c",
+    "CidrBlock": "10.0.3.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet2/Subnet"
+   }
+  },
+  "PromptOptimizerVPCPrivateSubnet2RouteTable809237CC": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet2/RouteTable"
+   }
+  },
+  "PromptOptimizerVPCPrivateSubnet2RouteTableAssociation48CAA83A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "PromptOptimizerVPCPrivateSubnet2RouteTable809237CC"
+    },
+    "SubnetId": {
+     "Ref": "PromptOptimizerVPCPrivateSubnet2Subnet810BA9D4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "PromptOptimizerVPCPrivateSubnet2DefaultRoute51083747": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "PromptOptimizerVPCPublicSubnet1NATGateway0A43043E"
+    },
+    "RouteTableId": {
+     "Ref": "PromptOptimizerVPCPrivateSubnet2RouteTable809237CC"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "PromptOptimizerVPCIGW6BE05EBC": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "PromptOptimizerStack/PromptOptimizerVPC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/IGW"
+   }
+  },
+  "PromptOptimizerVPCVPCGWCCB1100B": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "PromptOptimizerVPCIGW6BE05EBC"
+    },
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/VPCGW"
+   }
+  },
+  "PromptOptimizerVPCRestrictDefaultSecurityGroupCustomResourceFB7985FA": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "PromptOptimizerVPC6620D42D",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": "749210469209"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerVPC/RestrictDefaultSecurityGroupCustomResource/Default"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ec2:us-west-1:749210469209:security-group/",
+             {
+              "Fn::GetAtt": [
+               "PromptOptimizerVPC6620D42D",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-749210469209-us-west-1",
+     "S3Key": "7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200",
+    "aws:asset:property": "Code"
+   }
+  },
+  "PromptOptimizerClusterAEEC8CD3": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "ClusterName": "prompt-optimizer-cluster",
+    "ClusterSettings": [
+     {
+      "Name": "containerInsights",
+      "Value": "enabled"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerCluster/Resource"
+   }
+  },
+  "PromptOptimizerLogs4F88E262": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/ecs/prompt-optimizer-api",
+    "RetentionInDays": 14
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerLogs/Resource"
+   }
+  },
+  "PromptOptimizerTaskDefTaskRoleFC5AE2BE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerTaskDef/TaskRole/Resource"
+   }
+  },
+  "PromptOptimizerTaskDef25AE7D5E": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Cpu": 512,
+      "Environment": [
+       {
+        "Name": "LOG_LEVEL",
+        "Value": "INFO"
+       },
+       {
+        "Name": "PYTHONPATH",
+        "Value": "/app"
+       }
+      ],
+      "Essential": true,
+      "HealthCheck": {
+       "Command": [
+        "CMD-SHELL",
+        "python -c \"import requests; requests.get('http://localhost:8000/health')\""
+       ],
+       "Interval": 30,
+       "Retries": 3,
+       "StartPeriod": 60,
+       "Timeout": 5
+      },
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           4,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "PromptOptimizerECR0D4FFB87",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ".dkr.ecr.",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "PromptOptimizerECR0D4FFB87",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Ref": "PromptOptimizerECR0D4FFB87"
+         },
+         ":latest"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "PromptOptimizerLogs4F88E262"
+        },
+        "awslogs-stream-prefix": "prompt-optimizer",
+        "awslogs-region": "us-west-1"
+       }
+      },
+      "Memory": 1024,
+      "Name": "prompt-optimizer-container",
+      "PortMappings": [
+       {
+        "ContainerPort": 8000,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "512",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "PromptOptimizerTaskDefExecutionRole305C0B44",
+      "Arn"
+     ]
+    },
+    "Family": "PromptOptimizerStackPromptOptimizerTaskDef0720BA15",
+    "Memory": "1024",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "PromptOptimizerTaskDefTaskRoleFC5AE2BE",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerTaskDef/Resource"
+   }
+  },
+  "PromptOptimizerTaskDefExecutionRole305C0B44": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerTaskDef/ExecutionRole/Resource"
+   }
+  },
+  "PromptOptimizerTaskDefExecutionRoleDefaultPolicy6A0BCA70": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PromptOptimizerECR0D4FFB87",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PromptOptimizerLogs4F88E262",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PromptOptimizerTaskDefExecutionRoleDefaultPolicy6A0BCA70",
+    "Roles": [
+     {
+      "Ref": "PromptOptimizerTaskDefExecutionRole305C0B44"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerTaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "PromptOptimizerServiceLBC76463AF": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "PromptOptimizerServiceLBSecurityGroup0871F3BD",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "PromptOptimizerVPCPublicSubnet1Subnet395E5881"
+     },
+     {
+      "Ref": "PromptOptimizerVPCPublicSubnet2Subnet7C90DD5B"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "PromptOptimizerVPCPublicSubnet1DefaultRoute7F19BD0D",
+    "PromptOptimizerVPCPublicSubnet1RouteTableAssociation31E0F2E6",
+    "PromptOptimizerVPCPublicSubnet2DefaultRoute3D652B60",
+    "PromptOptimizerVPCPublicSubnet2RouteTableAssociation90942539"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/LB/Resource"
+   }
+  },
+  "PromptOptimizerServiceLBSecurityGroup0871F3BD": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB PromptOptimizerStackPromptOptimizerServiceLB12E0DFBB",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/LB/SecurityGroup/Resource"
+   }
+  },
+  "PromptOptimizerServiceLBSecurityGrouptoPromptOptimizerStackPromptOptimizerServiceSecurityGroup05235C3280005405CEFB": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "PromptOptimizerServiceSecurityGroup771E15F1",
+      "GroupId"
+     ]
+    },
+    "FromPort": 8000,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "PromptOptimizerServiceLBSecurityGroup0871F3BD",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 8000
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/LB/SecurityGroup/to PromptOptimizerStackPromptOptimizerServiceSecurityGroup05235C32:8000"
+   }
+  },
+  "PromptOptimizerServiceLBPublicListener8C470029": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "PromptOptimizerServiceLBPublicListenerECSGroup6EACB7D6"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "PromptOptimizerServiceLBC76463AF"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/LB/PublicListener/Resource"
+   }
+  },
+  "PromptOptimizerServiceLBPublicListenerECSGroup6EACB7D6": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckPath": "/health",
+    "Matcher": {
+     "HttpCode": "200"
+    },
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/LB/PublicListener/ECSGroup/Resource"
+   }
+  },
+  "PromptOptimizerServiceB3E4747D": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "PromptOptimizerClusterAEEC8CD3"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 2,
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "prompt-optimizer-container",
+      "ContainerPort": 8000,
+      "TargetGroupArn": {
+       "Ref": "PromptOptimizerServiceLBPublicListenerECSGroup6EACB7D6"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "PromptOptimizerServiceSecurityGroup771E15F1",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "PromptOptimizerVPCPrivateSubnet1Subnet29B55E6B"
+       },
+       {
+        "Ref": "PromptOptimizerVPCPrivateSubnet2Subnet810BA9D4"
+       }
+      ]
+     }
+    },
+    "PlatformVersion": "LATEST",
+    "ServiceName": "prompt-optimizer-service",
+    "TaskDefinition": {
+     "Ref": "PromptOptimizerTaskDef25AE7D5E"
+    }
+   },
+   "DependsOn": [
+    "PromptOptimizerServiceLBPublicListenerECSGroup6EACB7D6",
+    "PromptOptimizerServiceLBPublicListener8C470029",
+    "PromptOptimizerTaskDefTaskRoleFC5AE2BE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/Service/Service"
+   }
+  },
+  "PromptOptimizerServiceSecurityGroup771E15F1": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "PromptOptimizerStack/PromptOptimizerService/Service/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PromptOptimizerVPC6620D42D"
+    }
+   },
+   "DependsOn": [
+    "PromptOptimizerTaskDefTaskRoleFC5AE2BE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/Service/SecurityGroup/Resource"
+   }
+  },
+  "PromptOptimizerServiceSecurityGroupfromPromptOptimizerStackPromptOptimizerServiceLBSecurityGroup32E449EE8000C070F7FC": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "FromPort": 8000,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "PromptOptimizerServiceSecurityGroup771E15F1",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "PromptOptimizerServiceLBSecurityGroup0871F3BD",
+      "GroupId"
+     ]
+    },
+    "ToPort": 8000
+   },
+   "DependsOn": [
+    "PromptOptimizerTaskDefTaskRoleFC5AE2BE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/Service/SecurityGroup/from PromptOptimizerStackPromptOptimizerServiceLBSecurityGroup32E449EE:8000"
+   }
+  },
+  "PromptOptimizerServiceTaskCountTarget1D59E59E": {
+   "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+   "Properties": {
+    "MaxCapacity": 10,
+    "MinCapacity": 1,
+    "ResourceId": {
+     "Fn::Join": [
+      "",
+      [
+       "service/",
+       {
+        "Ref": "PromptOptimizerClusterAEEC8CD3"
+       },
+       "/",
+       {
+        "Fn::GetAtt": [
+         "PromptOptimizerServiceB3E4747D",
+         "Name"
+        ]
+       }
+      ]
+     ]
+    },
+    "RoleARN": "arn:aws:iam::749210469209:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService",
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ServiceNamespace": "ecs"
+   },
+   "DependsOn": [
+    "PromptOptimizerTaskDefTaskRoleFC5AE2BE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/Service/TaskCount/Target/Resource"
+   }
+  },
+  "PromptOptimizerServiceTaskCountTargetCpuScalingFAC3558E": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "PromptOptimizerStackPromptOptimizerServiceTaskCountTargetCpuScaling17C53D7A",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "PromptOptimizerServiceTaskCountTarget1D59E59E"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+     },
+     "ScaleInCooldown": 300,
+     "ScaleOutCooldown": 120,
+     "TargetValue": 70
+    }
+   },
+   "DependsOn": [
+    "PromptOptimizerTaskDefTaskRoleFC5AE2BE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/Service/TaskCount/Target/CpuScaling/Resource"
+   }
+  },
+  "PromptOptimizerServiceTaskCountTargetMemoryScalingAA36284B": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "PromptOptimizerStackPromptOptimizerServiceTaskCountTargetMemoryScaling35360793",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "PromptOptimizerServiceTaskCountTarget1D59E59E"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageMemoryUtilization"
+     },
+     "ScaleInCooldown": 300,
+     "ScaleOutCooldown": 120,
+     "TargetValue": 80
+    }
+   },
+   "DependsOn": [
+    "PromptOptimizerTaskDefTaskRoleFC5AE2BE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/PromptOptimizerService/Service/TaskCount/Target/MemoryScaling/Resource"
+   }
+  },
+  "HighCpuAlarm40723000": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "ClusterName",
+      "Value": {
+       "Ref": "PromptOptimizerClusterAEEC8CD3"
+      }
+     },
+     {
+      "Name": "ServiceName",
+      "Value": {
+       "Fn::GetAtt": [
+        "PromptOptimizerServiceB3E4747D",
+        "Name"
+       ]
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/ECS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 80
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/HighCpuAlarm/Resource"
+   }
+  },
+  "HighMemoryAlarmB77DAB20": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "ClusterName",
+      "Value": {
+       "Ref": "PromptOptimizerClusterAEEC8CD3"
+      }
+     },
+     {
+      "Name": "ServiceName",
+      "Value": {
+       "Fn::GetAtt": [
+        "PromptOptimizerServiceB3E4747D",
+        "Name"
+       ]
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "MemoryUtilization",
+    "Namespace": "AWS/ECS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 85
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/HighMemoryAlarm/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31TXW/bMAz8LX1XtNYD9p5mXRGgaI046GtBy6zCRZEMkUoQGP7vg+wkTj+wJx5PR+F4ggpd3BX69gYOPDPNduao1l0lYLYKDvzWoYm6W2EbmCTEo1q8+6nrFZpCd6+tyfxruVBlqh2ZKtUeJXMTWoUkuIba4cRP3Jw5GAKh4C/iDB6WZS7PII8geICjKiPtQXC6eOkFo8eLYHRy6uYiYDY79KIqNCmSHB9jSO3g4b/Eg43I/IVe+oHPm7PuFi6xYMyqM/wD0ULeire/8Z08nXf6zAQvQB7jFXearTDuyYw5nWBlwOWc8iWLkLz0ygXLunsK9uL/jHtFsNPdKoxZD7UMjswQzoiGBd5akBwe63nbOjJD/k8Bmntw4A02nwyhAxYyLkBTDwrydl/o7vvpOHq66q91xIL+pDnjq/M1RItyWe2q7RVMMkgS2IAjb3U3hZTFQ3wfmbGsI5gteVuNc1MyH4heGRdScwAxG93NHcRd1gyg79UKOaSYHymxhN3U5v/x7VEZw54ajPfAqObMKJWAJW/zzEuSNkmvyqNsgv/xU9/d6l83f5loFpMX2qFejfUfdRquSbEDAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "PromptOptimizerStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "PromptOptimizerServiceLoadBalancerDNS3C417696": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PromptOptimizerServiceLBC76463AF",
+     "DNSName"
+    ]
+   }
+  },
+  "PromptOptimizerServiceServiceURLAF35A4F3": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "PromptOptimizerServiceLBC76463AF",
+        "DNSName"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "LoadBalancerDNS": {
+   "Description": "Load Balancer DNS name",
+   "Value": {
+    "Fn::GetAtt": [
+     "PromptOptimizerServiceLBC76463AF",
+     "DNSName"
+    ]
+   }
+  },
+  "ECRRepositoryURI": {
+   "Description": "ECR Repository URI",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "PromptOptimizerECR0D4FFB87",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "PromptOptimizerECR0D4FFB87",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "PromptOptimizerECR0D4FFB87"
+      }
+     ]
+    ]
+   }
+  },
+  "ECSClusterName": {
+   "Description": "ECS Cluster name",
+   "Value": {
+    "Ref": "PromptOptimizerClusterAEEC8CD3"
+   }
+  },
+  "ECSServiceName": {
+   "Description": "ECS Service name",
+   "Value": {
+    "Fn::GetAtt": [
+     "PromptOptimizerServiceB3E4747D",
+     "Name"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
