@@ -3,3 +3,11 @@ uvicorn[standard]==0.24.0
 python-dotenv==1.0.0
 spacy>=3.7.0
 tiktoken>=0.5.0
+requests>=2.31.0
+
+pytest>=7.0.0
+pytest-cov>=4.0.0
+httpx>=0.24.0
+
+# spaCy model
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
