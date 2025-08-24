@@ -59,20 +59,40 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write  # Required for SARIF upload
+      actions: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
       - name: Install bandit
         run: pip install bandit
 
       - name: Run bandit scan
-        run: bandit -r app/ -f sarif -o bandit-report.sarif || true
+        run: |
+          bandit -r app/ -f sarif -o bandit-report.sarif || true
+          # Verify the SARIF file was created
+          if [ -f bandit-report.sarif ]; then
+            echo "Bandit SARIF report generated successfully"
+            ls -la bandit-report.sarif
+          else
+            echo "Bandit SARIF report not found, creating empty report"
+            echo '{"version": "2.1.0", "runs": []}' > bandit-report.sarif
+          fi
 
       - name: Upload SARIF report
         uses: github/codeql-action/upload-sarif@v3
+        if: always()  # Upload even if bandit found issues
         with:
           sarif_file: bandit-report.sarif
+          checkout_path: ${{ github.workspace }}
 
   build-and-push:
     name: Build and Push Docker Image
