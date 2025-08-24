@@ -56,6 +56,7 @@ jobs:
       with:
         file: ./coverage.xml
 
+
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
@@ -67,45 +68,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Run Semgrep
+        uses: semgrep/semgrep-action@v1
         with:
-          python-version: '3.11'
+          config: auto
+          generateSarif: "1"
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        continue-on-error: true
 
-      - name: Install bandit
-        run: pip install bandit
-
-      - name: Run bandit scan
-        run: |
-          # Run bandit and capture exit code
-          bandit -r app/ -f sarif -o bandit-report.sarif
-          BANDIT_EXIT_CODE=$?
-          
-          echo "Bandit exit code: $BANDIT_EXIT_CODE"
-          
-          if [ $BANDIT_EXIT_CODE -eq 0 ]; then
-            echo "No security issues found"
-            echo "UPLOAD_SARIF=false" >> $GITHUB_ENV
-          elif [ $BANDIT_EXIT_CODE -eq 1 ]; then
-            echo "Security issues found"
-            echo "UPLOAD_SARIF=true" >> $GITHUB_ENV
-          else
-            echo "Bandit scan failed"
-            echo "UPLOAD_SARIF=false" >> $GITHUB_ENV
-          fi
-          
-          # Show file info if it exists
-          if [ -f bandit-report.sarif ]; then
-            ls -la bandit-report.sarif
-            echo "SARIF file preview:"
-            head -20 bandit-report.sarif
-          fi
-
-      - name: Upload SARIF report
+      - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
-        if: env.UPLOAD_SARIF == 'true'
+        if: always()
         with:
-          sarif_file: bandit-report.sarif
+          sarif_file: semgrep.sarif
           checkout_path: ${{ github.workspace }}
 
   build-and-push:
