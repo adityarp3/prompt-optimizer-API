@@ -2,22 +2,25 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 
-client = TestClient(app)
+
+@pytest.fixture
+def client():
+    return TestClient(app)
 
 
-def test_read_root():
+def test_read_root(client):
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "Welcome to prompt-optimizer-API"}
 
 
-def test_health_check():
+def test_health_check(client):
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "healthy"}
 
 
-def test_optimize_prompt():
+def test_optimize_prompt(client):
     test_data = {
         "prompt": "Please help me write a story about a brave knight.",
         "model": "gpt",
@@ -33,7 +36,7 @@ def test_optimize_prompt():
     assert data["compression_ratio"] <= 1.0
 
 
-def test_invalid_model():
+def test_invalid_model(client):
     test_data = {
         "prompt": "Test prompt",
         "model": "invalid",
@@ -43,11 +46,32 @@ def test_invalid_model():
     assert response.status_code == 400
 
 
-def test_empty_prompt():
+def test_empty_prompt(client):
     test_data = {
         "prompt": "",
         "model": "gpt",
         "level": "light"
+    }
+    response = client.post("/optimize", json=test_data)
+    assert response.status_code == 400
+
+
+def test_invalid_level(client):
+    test_data = {
+        "prompt": "Test prompt",
+        "model": "gpt",
+        "level": "invalid"
+    }
+    response = client.post("/optimize", json=test_data)
+    assert response.status_code == 400
+
+
+def test_max_tokens_validation(client):
+    test_data = {
+        "prompt": "Test prompt",
+        "model": "gpt",
+        "level": "light",
+        "max_tokens": -1
     }
     response = client.post("/optimize", json=test_data)
     assert response.status_code == 400
